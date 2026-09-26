@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time App: Stopwatch & Countdown</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text: #f8fafc;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3);
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            background: var(--bg);
+            border-radius: 0.75rem;
+            padding: 0.35rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .tab-btn.active {
+            background: var(--card);
+            color: var(--text);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .display {
+            font-size: 4rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-variant-numeric: tabular-nums;
+            margin: 2.5rem 0;
+            font-weight: 700;
+            letter-spacing: -2px;
+        }
+        
+        .controls { 
+            display: flex; 
+            gap: 1rem; 
+            justify-content: center; 
+        }
+        
+        button.action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 1.1rem;
+            flex: 1;
+        }
+        
+        button.action-btn:hover { 
+            background: var(--primary-hover); 
+        }
+        
+        button.reset-btn {
+            background: transparent;
+            border: 2px solid #475569;
+        }
+        
+        button.reset-btn:hover { 
+            background: #334155; 
+        }
+        
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        .inputs {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2.5rem 0;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        
+        input[type="number"] {
+            width: 80px;
+            background: var(--bg);
+            border: 2px solid #475569;
+            color: var(--text);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-family: monospace;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        input::-webkit-outer-spin-button, 
+        input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] { 
+            -moz-appearance: textfield; 
+            appearance: textfield; 
+        }
+
+        .credit {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('stopwatch')">Stopwatch</button>
+        <button class="tab-btn" onclick="switchTab('countdown')">Countdown</button>
+    </div>
+
+    <div id="stopwatch" class="section active">
+        <div class="display" id="sw-display">00:00.00</div>
+        <div class="controls">
+            <button class="action-btn" id="sw-start" onclick="toggleStopwatch()">Start</button>
+            <button class="action-btn reset-btn" onclick="resetStopwatch()">Reset</button>
+        </div>
+    </div>
+
+    <div id="countdown" class="section">
+        <div class="inputs" id="cd-inputs">
+            <div class="input-group">
+                <input type="number" id="cd-min" value="05" min="0" max="99">
+                <span>Minutes</span>
+            </div>
+            <div class="input-group">
+                <input type="number" id="cd-sec" value="00" min="0" max="59">
+                <span>Seconds</span>
+            </div>
+        </div>
+        <div class="display" id="cd-display" style="display:none;">05:00</div>
+        <div class="controls">
+            <button class="action-btn" id="cd-start" onclick="toggleCountdown()">Start</button>
+            <button class="action-btn reset-btn" onclick="resetCountdown()">Reset</button>
+        </div>
+    </div>
+
+    <div class="credit">made by tudorioan1</div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    let swStartTime = 0;
+    let swElapsedTime = 0;
+    let swInterval = null;
+    let swRunning = false;
+
+    function updateStopwatch() {
+        const time = Date.now() - swStartTime + swElapsedTime;
+        const minutes = Math.floor(time / 60000);
+        const seconds = Math.floor((time % 60000) / 1000);
+        const centiseconds = Math.floor((time % 1000) / 10);
+        
+        document.getElementById('sw-display').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
+    }
+
+    function toggleStopwatch() {
+        if (swRunning) {
+            clearInterval(swInterval);
+            swElapsedTime += Date.now() - swStartTime;
+            document.getElementById('sw-start').textContent = 'Resume';
+        } else {
+            swStartTime = Date.now();
+            swInterval = setInterval(updateStopwatch, 10);
+            document.getElementById('sw-start').textContent = 'Pause';
+        }
+        swRunning = !swRunning;
+    }
+
+    function resetStopwatch() {
+        clearInterval(swInterval);
+        swRunning = false;
+        swElapsedTime = 0;
+        document.getElementById('sw-display').textContent = '00:00.00';
+        document.getElementById('sw-start').textContent = 'Start';
+    }
+
+    let cdInterval = null;
+    let cdTimeLeft = 0; 
+    let cdRunning = false;
+
+    function updateCountdownDisplay() {
+        const minutes = Math.floor(cdTimeLeft / 60);
+        const seconds = cdTimeLeft % 60;
+        document.getElementById('cd-display').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function tickCountdown() {
+        if (cdTimeLeft > 0) {
+            cdTimeLeft--;
+            updateCountdownDisplay();
+        } else {
+            clearInterval(cdInterval);
+            cdRunning = false;
+            document.getElementById('cd-start').textContent = 'Start';
+            setTimeout(() => alert('Time is up!'), 100);
+            resetCountdown();
+        }
+    }
+
+    function toggleCountdown() {
+        const inputs = document.getElementById('cd-inputs');
+        const display = document.getElementById('cd-display');
+        const startBtn = document.getElementById('cd-start');
+
+        if (cdRunning) {
+            clearInterval(cdInterval);
+            startBtn.textContent = 'Resume';
+        } else {
+            if (startBtn.textContent === 'Start') {
+                const min = parseInt(document.getElementById('cd-min').value) || 0;
+                const sec = parseInt(document.getElementById('cd-sec').value) || 0;
+                cdTimeLeft = (min * 60) + sec;
+                
+                if (cdTimeLeft <= 0) return; 
+                
+                inputs.style.display = 'none';
+                display.style.display = 'block';
+                updateCountdownDisplay();
+            }
+            cdInterval = setInterval(tickCountdown, 1000);
+            startBtn.textContent = 'Pause';
+        }
+        cdRunning = !cdRunning;
+    }
+
+    function resetCountdown() {
+        clearInterval(cdInterval);
+        cdRunning = false;
+        document.getElementById('cd-start').textContent = 'Start';
+        document.getElementById('cd-inputs').style.display = 'flex';
+        document.getElementById('cd-display').style.display = 'none';
+    }
+</script>
+</body>
+</html>
